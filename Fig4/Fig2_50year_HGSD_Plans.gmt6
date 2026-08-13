@@ -1,0 +1,357 @@
+#!/usr/bin/bash
+## 5-1-2024, plot 3 subplots, HGSD Plans
+
+gmt begin Fig2_50year_HGSD_Plans ps,pdf,jpg
+# gmt begin Fig1_TX ps,pdf,jpg
+
+#gmt set FONT_TITLE 8p,19,black
+#gmt set FONT_LABEL 8p,19,black
+gmt set FONT_LABEL 8p,Helvetica
+gmt set MAP_FRAME_TYPE plain
+gmt set FORMAT_GEO_MAP ddd.x  MAP_GRID_CROSS_SIZE_PRIMARY0.03i
+
+gmt set FONT_TITLE 8p, Helvetica
+gmt set MAP_TITLE_OFFSET 0.1p
+gmt set FONT_ANNOT_PRIMARY 8p
+
+### 10-14-2019, plot GOM-LA subfigure
+### I spent some time to handle the  MORVEL_Plateboundaries.xy file tha tI downloaded from MORVEL.
+## The original all file "All_boundaries is not in a GMT format, it is in lat--long format, 
+## I need to add "-:" in psxy to switch from lat-long to lon-lat. The most trick part is that the
+## GMT psxy need to identify ">" to separate different segment. However, most text files do not have that.
+## I use "sed -i 's/[a-z]/>/g' inputfile" to replace all character lines with ">". I may need to keep the
+## original characters and just add ">" infront. Will do this in the future!
+## This is what I used----
+    ## cp All_boundaries  MORVEL_Plateboundaries.xy
+    ## sed -i 's/[a-z]/>/g' MORVEL_Plateboundaries.xy    !! This just replaced all characters with >
+    ## sed -i 's/[A-Z]/>/g' MORVEL_Plateboundaries.xy
+    ## psxy $F $S -:   MORVEL_Plateboundaries.xy  -W2.0,blue  -O -K -V   >> $O
+##10-22-2019, Handle Peter Bird's plate boundary dataFig2_HoustonNet_allGPS.gmt6 
+   ## download PB2002_boundaries.dig.txt from http://peterbird.name/oldFTP/PB2002/, 
+   ## copy to PB2002_boundaries.xy
+   ## replace "**" line with ">" ,
+     # sed -i 's/[***]/>/g' PB2002_boundaries.xy
+   ## add ">" infront of all character lines
+     #sed 's/[A-Z]/>/' test.xy > tmp.xy
+
+
+
+## Whole GOM
+ # F="-R-110/-75/13/37.5"
+## 50 RF Area
+#F="-R-98.5/-93.5/25.85/30.3"
+
+
+## CA-NA-COCOS area
+ # F="-R-95/-85/11/20"
+## Houston area
+F="-Rd-96.1/-94.8/29.1/30.2"
+S="-JM16c"
+
+I="-I0.01" 
+
+gmt subplot begin 1x3 -Fs6.5c -M0c 
+gmt set FONT_ANNOT_PRIMARY 8p
+
+##########################First Subplot
+#gmt subplot set 0 -A'(a) HGSD 1975 Plan'
+gmt subplot set 0  
+gmt basemap $F  -Ba30mf10m -BWSen 
+
+## HGSD Area 1--light green 204/255/153, HG-Area-2, light blue 204/229/255, HG3-light pink, 255/204/255
+gmt psxy   HGSD_1975Plan_Part1.xy -W0.5,black -L -G204/255/153@50
+gmt psxy   HGSD_1975Plan_Part2.xy  -W0.5,black -L -G204/255/153@50 
+
+## add three loops
+gmt psxy   TX_Counties.psxy  -W0.6,black -L 
+##psxy $F $S Houston_IH99_outerloop.psxy -m -W10t20_10:0 
+gmt psxy  Houston_SL8_middle_loop.psxy  -W2,gray -L 
+gmt psxy  Houston_IH610_inner_loop.psxy  -W2,gray -L 
+
+## permanent rivers
+gmt pscoast -Df -I1/2.0p,blue,-  -Sdeepskyblue
+### plot major TX Coast Cities
+gmt text   -F+a0+f11+jMC   <<EOF 
+-95.370 29.760 Houston
+EOF
+gmt text  -F+a0+f11+jMC     <<EOF  
+-95  28.84    Gulf of Mexico
+EOF
+
+
+## plot the names of district
+gmt text  -F+a0+f8+jMC   << EOF
+-95.05  29.45  Galveston 
+-95.05  29.4  County
+-95.5 29.98  Harris County
+-95.75  29.5  Fort Bend County
+EOF
+gmt text  -F+a0+f10+jMC -Gwhite  << EOF
+-95.2  29.65   ACE
+EOF
+gmt text  -F+a0+f10+jML -Gwhite  << EOF
+-96.05  29.17   (a) HGSD 1975 Plan
+EOF
+
+###################### Second subplot
+gmt subplot set 1 
+gmt basemap $F  -Ba30mf10m -BwSen 
+
+## HGSD Area 1--light green 204/255/153, HG-Area-2, light blue 204/229/255, HG3-light pink, 255/204/255
+gmt psxy  HG_Area_1.psxy  -W0.5,black -L -G204/255/153@50
+gmt psxy   HGSD_1985Plan_Part2.xy  -W0.5,black -L -G204/229/255 
+# area 8
+gmt psxy   HG_Area_3.psxy  -W0.5,black  -L  -Ggray
+
+gmt psxy   HGSD_1985Plan_Part3.xy  -W0.5,black -L -Gblue 
+gmt psxy   HGSD_1985Plan_Part4.xy  -W0.5,black -L -Gcyan
+gmt psxy   HGSD_1985Plan_Part5.xy  -W0.5,black -L -Ggreen
+gmt psxy   HGSD_1985Plan_Part6.xy  -W0.5,black -L -Gpink
+gmt psxy   HGSD_1985Plan_Part7.xy  -W0.5,black -L -Gorange
+
+## add three loops
+gmt psxy   TX_Counties.psxy  -W0.6,black -L 
+##psxy $F $S Houston_IH99_outerloop.psxy -m -W10t20_10:0 
+gmt psxy  Houston_SL8_middle_loop.psxy  -W2,gray -L 
+gmt psxy  Houston_IH610_inner_loop.psxy  -W2,gray -L 
+
+## permanent rivers
+gmt pscoast -Df -I1/2.0p,blue,-  -Sdeepskyblue
+### plot major TX Coast Cities
+#gmt text   -F+a0+f11+jMC   <<EOF 
+#-95.370 29.760 Houston
+#EOF
+gmt text  -F+a0+f11+jMC     <<EOF  
+-95  28.84    Gulf of Mexico
+EOF
+
+
+## plot the names of district
+gmt text  -F+a0+f8+jMC   << EOF
+-95.05  29.45  Galveston 
+-95.05  29.4  County
+#-95.16  29.98  Harris County
+-95.75  29.5  Fort Bend County
+EOF
+gmt text  -F+a0+f9+jMC -Gwhite  << EOF
+-95.05  29.6   1
+-95.35  29.65   2
+-95.52  29.75   3
+-95.63  29.75   4
+-95.25  30   5
+-95.45  30   6
+-95.65  30   7
+-95.8  30   8
+EOF
+gmt text  -F+a0+f10+jML -Gwhite  << EOF
+-96.05  29.17   (b) HGSD 1985 Plan
+EOF
+   
+    
+######################### Third subplot
+gmt subplot set 2 
+gmt basemap $F  -Ba30mf10m -BwSEn 
+    
+## plot subsidence district
+##LoneStar SD: light yellow-red, 255/178/202
+#gmt psxy   LSGCD.psxy  -W1,black  -G255/170/170@75
+## Brazoria County, light cyan
+#gmt psxy   Brazoria_County.psxy  -W1,black  -G204/204/255 
+#gmt psxy BGCD.xy -W1,black  -Gblue@95 
+#gmt psxy LTGCD.xy  -W1,black  -Ggreen@70
+
+## HGSD Area 1--light green 204/255/153, HG-Area-2, light blue 204/229/255, HG3-light pink, 255/204/255
+gmt psxy  HG_Area_1.psxy  -W0.5,black -L -G204/255/153@50
+gmt psxy   HG_Area_2.psxy  -W0.5,black -L -G204/229/255 
+gmt psxy   HG_Area_3.psxy  -W0.5,black -L -G255/155/255@55 
+    
+##FB-A,light yellow 255/255/153, FB-B:light brown 255/204/155, FB-RR: light orange 255/153/53
+gmt psxy   FB_Area_A.psxy  -W0.5,255/255/120  -L -G255/255/120 
+gmt psxy   FB_Area_RR.psxy -W0.5,255/255/120  -L -G255/255/120 
+gmt psxy   FB_Area_B.psxy  -W0.5 -L -G255/204/155 
+#gmt psxy   FB_Area_RR.psxy -W0.5,black -L -G255/153/53 
+
+## add three loops
+gmt psxy   TX_Counties.psxy  -W0.6,black -L 
+##psxy $F $S Houston_IH99_outerloop.psxy -m -W10t20_10:0 
+gmt psxy  Houston_SL8_middle_loop.psxy  -W2,gray -L 
+gmt psxy  Houston_IH610_inner_loop.psxy  -W2,gray -L 
+
+## permanent rivers
+gmt pscoast -Df -I1/2.0p,blue,-  -Sdeepskyblue
+### plot major TX Coast Cities
+gmt text   -F+a0+f9+jMC   <<EOF 
+-95.370 29.760 Houston
+EOF
+gmt text  -F+a0+f11+jMC     <<EOF  
+-95  28.84    Gulf of Mexico
+EOF
+
+
+
+## plot the names of district
+gmt text  -F+a0+f8+jMC   << EOF
+-95.05  29.45  Galveston 
+-95.05  29.4  County
+-95.3  29.98  Harris County
+#-95.345 30.2   Montgomery County
+#-96.0  30.  Waller County
+-95.75  29.5  Fort Bend County
+#-95.4 29.1   Brazoria County
+#-94.8 30.1   Liberty County
+#-94.7 29.8 Chambers County
+#-95.7   28.6 Matagorda County
+#-96.1 29.3  Wharton County
+#-96.3 29.9 Austin County
+#-96.0 30.5 Grimes County
+#-95.6 30.6 Walker County
+#-95.15 30.55 San Jancito County
+#-94.7   30.65 Polk County
+EOF
+gmt text  -F+a0+f8+jMC -Gwhite  << EOF
+-95.02  29.6    Area 1
+-95.35  29.65   HGSD Area 2
+-95.7  30     HGSD Area 3
+-95.8  29.37   FBSD Area B
+-95.74  29.6  FBSD Area A
+#-95.6 30.3 LSGCD
+#-95.5 29.23 BCGCD
+#-96 30.25  BGCD
+#-95.1 30.45 LTGCD
+EOF
+gmt text  -F+a0+f10+jML -Gwhite  << EOF
+-96.05  29.17   (c) HGSD&FBSD 2013 Plans
+EOF
+
+gmt subplot end
+gmt end show
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Google "NOAA Sea Level Rise Viewer DEM", to download TX coast data
+## Use grdimage to input NOAA-Coast-DEM *.tif file
+
+#gmt coast -Wthinnest,darkred -Gdarkseagreen1 -Slightblue -A1
+
+#gmt grdgradient   TX_Central_GCS_15m_NAVDm.nc -A35  -Gi_central -Ne0.7 -V
+#gmt grdimage TX_Central_GCS_15m_NAVDm.nc  -Ii_central -Ctest.cpt
+
+#gmt grdgradient $F TX_South1_GCS_3m_NAVDm.nc  -A35  -Gi_south1 -Ne0.7 -V
+#gmt grdimage  TX_South1_GCS_3m_NAVDm.nc  -Ii_south1 -Ctest.cpt
+
+
+##grdimage -JN0/10c -B0 -N -D BlueMarbleNG-TB_2004-08-01_rgb_1440x720.TIFF > jn0.ps
+
+### plot three zones
+ # gmt psxy TX_central_zone.xy   -W0.7p,-. -Gyellow@80
+ # gmt psxy TX_southern_zone.xy   -W0.7p,-.  -Gorange@75
+ # gmt psxy TX_northern_zone.xy   -W0.7p,-.  -Gorange@60
+## National boundary  
+ #gmt pscoast -Na/1p -Df 
+
+###---Output--------------------------------
+#gv $O
+
+#map="Fig3_GOM20"
+#ps2epsi  $O $map.eps
+#ps2pdf  $O $map.pdf
+#cp $O $map.ps
+#ps2raster $map.ps -A -P -E700 -Tj
+
+
+
+##grdimage $F $S -O -K gebco_08.nc -Ctest.cpt   >> $O
+
+ ## major Canels
+     #  pscoast $F $S -Df -I8/2p,white,-.   -O -K >> $O
+
+## plot salt domes
+  #  psxy $F $S Houston_SaltDomes.psxy -Gorange -W1,orange,-   -O -K -V   >> $O
+    #    psxy $F $S GOM_salt.xy -Gorange -W1,orange,-   -O -K -V   >> $O
+
+### plot USGS principal fault lines, very good
+     #psxy $F $S    USGS_Houston_Faults.xy -W1.8,red  -O -K -V   >> $O
+
+##> -Sf0.45/3p+t+r
+#for the Juan de Fuca plate subducting under NorthAmerica. With the new header, psxy will now plot a triangle (+t) with a 3pt size (3p) to the right side (+r) of the front, fronts being separated by 0.45cm. 
+     
+    #  psxy $F $S    GOM_fault.xy -W0.3,red -Sf0.3/2p+t+l -Gred  -O -K -V   >> $O
+
+#      psxy $F $S -:   MORVEL_Plateboundaries.xy  -W1.5,blue  -O -K -V   >> $O
+
+#       psxy $F $S      PB2002_boundaries.xy  -W1.5,blue  -Sf0.25/3p -Gred  -O -K -V   >> $O
+      # psxy $F $S       tmp.xy  -W1.5,blue   -O -K -V   >> $O
+
+
+#####Legend
+  #pstext $F $S -Xa2.5c -Ya0.5c  -G255/255/255 -O -K   << EOF   >> $O
+   #-95      29.18    8 0 0 LM   Salt Dome
+   #EOF
+
+
+
+    # psxy $F $S GOM_All.psxy  -Sc0.1c -Wblue  -Gblue  -O -K >> $O
+ #  pstext $F $S -Xa0.2c -Ya0.25c GOM_All.psxy    -O -K >> $Ols GOM20*
+
+   
+
+##psxy $F $S  China_CORS_260.txt  -Sc0.15c -W0 -G255/0/0 -O -K  >> $O
+
+#psvelo  NCHIN_12RF_psvelo_H.txt $F $S -Se0.2/0.0/0 -Wred -P -G255/0/0 -O  >> $O
+
+    #psxy $F $S  NCHIN_12REFS.psxy  -Sc0.25c -W0  -G255/255/0 -O -K  >> $O
+
+## smartly plot Tianjin Location
+#psvelo  $F $S -Se0.035/0.95/0 -P -G0/0/255 -O -K  <<EOF  >> $O
+#-95.58640882    29.79222222    -1.64  -13.4   0.5    0.6    0.5     ADKS
+   #psvelo $F $S -Se0.7/0.95/12 -P -W1.7p,blue -G0/0/255 -O -K  <<EOF  >> $O
+   #127.5 38.7  -2  0  0 0 0.5 Tianjin
+   #EOF
+##psvelo  GOM_MIDAS_HRF20_H.psvel $F $S  -Se0.05/0.0/5  -Wred -P -G255/0/0 -O -K >> $O
+
+  # psvelo  GOM_MIDAS_GOM20_H.psvel $F $S  -Se0.3/0.0/0  -Wred -P -G255/0/0 -O -K >> $O
+
+  # psvelo  GOM_MIDAS_GOM20_V.psvel $F $S  -Se0.3/0.0/0  -Wblue -P -Gblue -O -K >> $O  
+
+  
+  # psvelo   $F $S GOM_2010-2019_GOM20_V.psvel -Se0.15/0.0/0  -Wblue -P -Gblue -O -K >> $O  
+
+## plot 2014 GOM14 stations
+#psxy $F $S -Sc0.3c   -G255/255/0   -W1.7p,yellow -O -K  <<EOF  >> $O
+#-87.66271     34.71032     -0.323320    0.078050     0.0     0.0     0.0     AL20
+#EOF
+
+
+#psvelo   $F $S  GOM_RF_IGS08_H.psvel  -Se0.08/0.0/0  -Wred -P -Gred -O -K >>  $O
+
+#psvelo   $F $S  GOM_RF_NAD83_H.psvel  -Se0.4/0.0/0  -Wblue -P -Gblue -O -K >>  $O
+
+#psvelo   $F $S  GOM_RF_GOM20_H.psvel  -Se0.8/0.0/0  -Wblack -P -Gblack -O -K >> $O
+
+### plot the outcrop boundary
+#gmt psxy TX_Outcrop.xy  -W25p,orange 
+
+# gmt psxy  Catahoula_shape_dissolve.xy -W0.5p,red -Gblue@85
+
+# gmt psxy  Jasper_shape_dissolve.xy -W0.3p,white -Gorange@85
+
+##gmt psxy  Burkeville_shape_dissolve.xy -W0.3p,white -Gblack@90
+
+# gmt psxy  Evangeline_shape_dissolve.xy -W0.3p,white  -Ggreen@90
+
+# gmt psxy  Chicot_shape_dissolve.xy -W0.3p,white  -Gyellow@85
+
+#gmt text  -F+a47.5+f9+jMC  << EOF
+#-96.8  29.85  Outcrops of Major Aquifers
+#EOF
+
